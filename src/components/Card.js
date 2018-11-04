@@ -6,8 +6,9 @@ export default class Card extends React.Component {
     super();
 
     this.state = {
-      opened: false,
+        opened: false,
     };
+
   }
 
   toggleSummary = () => {
@@ -18,6 +19,14 @@ export default class Card extends React.Component {
     });
   };
 
+
+  addRemoveLike = () => {
+        const { onHeartClick,
+                movie,
+                } = this.props;
+        onHeartClick(movie.id);
+  }
+
   render() {
     const {
       movie: {
@@ -27,8 +36,11 @@ export default class Card extends React.Component {
         release_date,
         vote_average,
         vote_count,
+          id
       },
+        likedMoviesId
     } = this.props;
+
     const { opened } = this.state;
 
     return (
@@ -43,7 +55,7 @@ export default class Card extends React.Component {
         </div>
 
         <div className="card__like">
-          <i className="fa fa-heart-o" />
+           <i className={likedMoviesId.indexOf(id) === -1 ? "fa fa-heart-o" : "fa fa-heart"} onClick={this.addRemoveLike} />
         </div>
 
         <div className="card__subtitle">
