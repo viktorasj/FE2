@@ -1,14 +1,16 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import { getImageUrl } from '../../config';
+import { likeMovie } from "../thunks";
+import { unlikeMovie } from "../thunks";
 
-export default class Card extends React.Component {
+class Card extends React.Component {
   constructor() {
     super();
 
     this.state = {
-        opened: false,
+      opened: false,
     };
-
   }
 
   toggleSummary = () => {
@@ -19,16 +21,11 @@ export default class Card extends React.Component {
     });
   };
 
-
-  addRemoveLike = () => {
-        const { onHeartClick,
-                movie,
-                } = this.props;
-        onHeartClick(movie.id);
-  }
-
   render() {
     const {
+      isHearted,
+      onAddHeart,
+      onRemoveHeart,
       movie: {
         backdrop_path,
         original_title,
@@ -36,11 +33,8 @@ export default class Card extends React.Component {
         release_date,
         vote_average,
         vote_count,
-          id
       },
-        likedMoviesId
     } = this.props;
-
     const { opened } = this.state;
 
     return (
@@ -54,8 +48,8 @@ export default class Card extends React.Component {
           {original_title}
         </div>
 
-        <div className="card__like">
-           <i className={likedMoviesId.indexOf(id) === -1 ? "fa fa-heart-o" : "fa fa-heart"} onClick={this.addRemoveLike} />
+        <div className="card__like" onClick={isHearted ? onRemoveHeart : onAddHeart}>
+          <i className={`fa fa-heart${isHearted ? '' : '-o'}`} />
         </div>
 
         <div className="card__subtitle">
@@ -78,3 +72,14 @@ export default class Card extends React.Component {
     );
   }
 }
+
+export default connect(
+    ({ movies: { likedMovies } },
+     { movie: { id } }) =>
+    ({isHearted: likedMovies.includes(id)}),
+
+    (dispatch, { movie: { id } }) => ({
+        onAddHeart: () => dispatch(likeMovie(id)),
+        onRemoveHeart: () => dispatch(unlikeMovie(id))
+    })
+)(Card);
